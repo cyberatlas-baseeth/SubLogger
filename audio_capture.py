@@ -22,9 +22,11 @@ class AudioCapture:
         self._stream: sd.InputStream | None = None
         self._running = False
         self._lock = threading.Lock()
+        self._device_channels = 1  # will be set based on device
 
-    def _find_loopback_device(self) -> int | None:
-        """Find a WASAPI loopback device on Windows."""
+    def _find_loopback_device(self) -> tuple[int | None, int]:
+        """Find a WASAPI loopback device on Windows.
+        Returns (device_index, channel_count)."""
         try:
             devices = sd.query_devices()
             hostapis = sd.query_hostapis()
@@ -37,24 +39,26 @@ class AudioCapture:
                     break
 
             if wasapi_idx is None:
-                return None
+                return (None, 1)
 
             # Find a loopback device in WASAPI
             for i, dev in enumerate(devices):
                 if dev["hostapi"] == wasapi_idx and dev["max_input_channels"] > 0:
                     name = dev["name"].lower()
                     if "loopback" in name or "stereo mix" in name:
-                        return i
+                        return (i, dev["max_input_channels"])
 
             # Fallback: use default WASAPI output as loopback
             default_output = hostapis[wasapi_idx].get("default_output_device")
             if default_output is not None and default_output >= 0:
-                return default_output
+                dev = devices[default_output]
+                channels = max(dev.get("max_input_channels", 0), dev.get("max_output_channels", 2))
+                return (default_output, channels)
 
         except Exception as e:
             print(f"[WARN] Error finding loopback device: {e}")
 
-        return None
+        return (None, 1)
 
     def start(self):
         """Start capturing system audio."""
@@ -62,27 +66,36 @@ class AudioCapture:
             if self._running:
                 return
 
-            device = self._find_loopback_device()
+            device, native_channels = self._find_loopback_device()
             extra_settings = None
+
+            # Use at least 2 channels for loopback (most devices are stereo)
+            if native_channels < 1:
+                native_channels = 2
 
             if device is not None:
                 try:
                     # Try to use WASAPI loopback
                     extra_settings = sd.WasapiSettings(exclusive=False)
-                    print(f"[INFO] Using WASAPI loopback device: {sd.query_devices(device)['name']}")
+                    dev_info = sd.query_devices(device)
+                    print(f"[INFO] Using WASAPI loopback device: {dev_info['name']} ({native_channels}ch)")
                 except Exception:
                     device = None
                     extra_settings = None
+                    native_channels = 1
                     print("[WARN] WASAPI not available, using default input device")
 
             if device is None:
                 print("[INFO] Using default audio input device")
+                native_channels = 1
+
+            self._device_channels = native_channels
 
             try:
                 self._stream = sd.InputStream(
                     device=device,
                     samplerate=config.AUDIO_SAMPLE_RATE,
-                    channels=config.AUDIO_CHANNELS,
+                    channels=native_channels,
                     dtype="float32",
                     blocksize=int(config.AUDIO_SAMPLE_RATE * config.AUDIO_CHUNK_DURATION),
                     callback=self._audio_callback,
@@ -115,9 +128,14 @@ class AudioCapture:
         if status:
             print(f"[WARN] Audio status: {status}")
         if self._running:
-            # Copy to avoid buffer reuse issues
             try:
-                self._queue.put_nowait(indata.copy().flatten())
+                audio = indata.copy()
+                # Downmix to mono if multi-channel
+                if audio.ndim > 1 and audio.shape[1] > 1:
+                    audio = audio.mean(axis=1)
+                else:
+                    audio = audio.flatten()
+                self._queue.put_nowait(audio)
             except queue.Full:
                 pass  # Drop oldest if queue is full
 
