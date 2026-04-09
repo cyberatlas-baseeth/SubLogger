@@ -1,20 +1,22 @@
-import sounddevice as sd
 import numpy as np
 
-device = 13  # WASAPI headphones
-channels = 2
+_original_fromstring = np.fromstring
+def _patched_fromstring(string, dtype=float, count=-1, sep=''):
+    if sep == '':
+        return np.frombuffer(string, dtype=dtype, count=count)
+    return _original_fromstring(string, dtype=dtype, count=count, sep=sep)
+np.fromstring = _patched_fromstring
+
+import soundcard as sc
 
 try:
-    print(f"Opening WASAPI loopback on device {device} with {channels} channels...")
-    settings = sd.WasapiSettings(loopback=True)
-    with sd.InputStream(
-        device=device,
-        channels=channels,
-        samplerate=44100,  # try 44100 first
-        extra_settings=settings
-    ) as stream:
-        print("Success! Reading 10 frames...")
-        data, overflow = stream.read(10)
+    mic = sc.default_speaker()
+    print("Speaker found:", mic.name)
+    loopback = sc.get_microphone(id=str(mic.name), include_loopback=True)
+    print("Loopback found:", loopback.name)
+    with loopback.recorder(samplerate=16000, channels=1) as rec:
+        print("Successfully opened! Reading 1000 frames...")
+        data = rec.record(1000)
         print("Data shape:", data.shape)
 except Exception as e:
-    print("FAILED:", e)
+    print("ERROR:", e)

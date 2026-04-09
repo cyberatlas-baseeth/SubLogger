@@ -6,6 +6,15 @@ System audio loopback capture using soundcard library natively on Windows.
 import threading
 import queue
 import numpy as np
+
+# Monkey-patch numpy.fromstring for soundcard compatibility with numpy >= 1.24
+_original_fromstring = np.fromstring
+def _patched_fromstring(string, dtype=float, count=-1, sep=''):
+    if sep == '':
+        return np.frombuffer(string, dtype=dtype, count=count)
+    return _original_fromstring(string, dtype=dtype, count=count, sep=sep)
+np.fromstring = _patched_fromstring
+
 import soundcard as sc
 
 import config
