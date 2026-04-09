@@ -1,0 +1,28 @@
+--- Host APIs ---
+[0] MME
+[1] Windows DirectSound
+[2] Windows WASAPI
+[3] Windows WDM-KS
+
+--- Devices ---
+[0] Microsoft Ses Eşleştiricisi - Input - IN: 2, OUT: 0, API: 0
+[1] Mikrofon (Realtek(R) Audio) - IN: 2, OUT: 0, API: 0
+[2] Mikrofon Dizisi (Realtek(R) Aud - IN: 2, OUT: 0, API: 0
+[3] Microsoft Ses Eşleştiricisi - Output - IN: 0, OUT: 2, API: 0
+[4] Kulaklıklar (Realtek(R) Audio) - IN: 0, OUT: 2, API: 0
+[5] Hoparlör (Realtek(R) Audio) - IN: 0, OUT: 2, API: 0
+[6] Birincil Ses Yakalama Sürücüsü - IN: 2, OUT: 0, API: 1
+[7] Mikrofon (Realtek(R) Audio) - IN: 2, OUT: 0, API: 1
+[8] Mikrofon Dizisi (Realtek(R) Audio) - IN: 2, OUT: 0, API: 1
+[9] Birincil Ses Sürücüsü - IN: 0, OUT: 2, API: 1
+[10] Kulaklıklar (Realtek(R) Audio) - IN: 0, OUT: 2, API: 1
+[11] Hoparlör (Realtek(R) Audio) - IN: 0, OUT: 2, API: 1
+[12] Hoparlör (Realtek(R) Audio) - IN: 0, OUT: 2, API: 2
+[13] Kulaklıklar (Realtek(R) Audio) - IN: 0, OUT: 2, API: 2
+[14] Mikrofon (Realtek(R) Audio) - IN: 2, OUT: 0, API: 2
+[15] Mikrofon Dizisi (Realtek(R) Audio) - IN: 2, OUT: 0, API: 2
+[16] Mikrofon Dizisi (Realtek HD Audio Mic Array input) - IN: 2, OUT: 0, API: 3
+[17] Stereo Karışımı (Realtek HD Audio Stereo input) - IN: 2, OUT: 0, API: 3
+[18] Headphones (Realtek HD Audio 2nd output) - IN: 0, OUT: 2, API: 3
+[19] Mikrofon (Realtek HD Audio Mic input) - IN: 2, OUT: 0, API: 3
+[20] Speakers (Realtek HD Audio output) - IN: 0, OUT: 2, API: 3
