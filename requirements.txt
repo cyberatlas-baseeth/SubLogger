@@ -1,0 +1,7 @@
+websockets>=12.0
+openai-whisper>=20231117
+langdetect>=1.0.9
+deep-translator>=1.11.4
+sounddevice>=0.4.6
+numpy>=1.24.0
+torch>=2.0.0

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SubLogger</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <h1>SubLogger</h1>
+      <span class="version">v1.0.0</span>
+    </div>
+
+    <!-- Status -->
+    <div class="status-section">
+      <div class="status-row">
+        <span class="status-label">Backend</span>
+        <span id="status-indicator" class="status-dot disconnected"></span>
+        <span id="status-text" class="status-value">Disconnected</span>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-section">
+      <div class="stat-item">
+        <span class="stat-value" id="stat-sent">0</span>
+        <span class="stat-label">Sent</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-value" id="stat-acked">0</span>
+        <span class="stat-label">Processed</span>
+      </div>
+    </div>
+
+    <!-- Server URL -->
+    <div class="input-section">
+      <label for="server-url">Server URL</label>
+      <div class="input-row">
+        <input type="text" id="server-url" value="ws://localhost:8765" />
+        <button id="btn-save" title="Save & Reconnect">↻</button>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls-section">
+      <div class="toggle-row">
+        <span>Detection</span>
+        <label class="toggle">
+          <input type="checkbox" id="toggle-enabled" checked />
+          <span class="slider"></span>
+        </label>
+      </div>
+      <button id="btn-reconnect" class="btn-secondary">Reconnect</button>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
